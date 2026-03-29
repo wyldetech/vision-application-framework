@@ -21,7 +21,7 @@
       "value": "https://reference-app-staging.example.com/openapi.json"
     },
     "referenceAppImage": {
-      "value": "ghcr.io/eaf/reference-app:staging"
+      "value": "<replace-with-staging-acr-login-server>/reference-app:staging"
     }
   }
 }

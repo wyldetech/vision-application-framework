@@ -1,9 +1,7 @@
-name: Deploy infrastructure
+name: Deploy infrastructure (manual helper)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -22,6 +20,8 @@ jobs:
       AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       SQL_ADMIN_PASSWORD: ${{ secrets[format('SQL_ADMIN_PASSWORD_{0}', toUpper(matrix.environment))] }}
+      REFERENCE_APP_IMAGE: ${{ secrets[format('REFERENCE_APP_IMAGE_{0}', toUpper(matrix.environment))] }}
+      REFERENCE_APP_OPENAPI_URL: ${{ secrets[format('REFERENCE_APP_OPENAPI_URL_{0}', toUpper(matrix.environment))] }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,18 +38,21 @@ jobs:
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --template-file eaf-infra/main.bicep \
             --parameters @eaf-infra/environments/${{ matrix.environment }}.params.json \
-            --parameters sqlAdminPassword="$SQL_ADMIN_PASSWORD"
+            --parameters sqlAdminPassword="$SQL_ADMIN_PASSWORD" \
+            --parameters referenceAppImage="$REFERENCE_APP_IMAGE" \
+            --parameters referenceAppOpenApiUrl="$REFERENCE_APP_OPENAPI_URL"
 
   deploy-prod:
     name: Deploy prod
     needs: deploy-nonprod
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     environment: prod
     env:
       AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD_PROD }}
+      REFERENCE_APP_IMAGE: ${{ secrets.REFERENCE_APP_IMAGE_PROD }}
+      REFERENCE_APP_OPENAPI_URL: ${{ secrets.REFERENCE_APP_OPENAPI_URL_PROD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,4 +69,6 @@ jobs:
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --template-file eaf-infra/main.bicep \
             --parameters @eaf-infra/environments/prod.params.json \
-            --parameters sqlAdminPassword="$SQL_ADMIN_PASSWORD"
+            --parameters sqlAdminPassword="$SQL_ADMIN_PASSWORD" \
+            --parameters referenceAppImage="$REFERENCE_APP_IMAGE" \
+            --parameters referenceAppOpenApiUrl="$REFERENCE_APP_OPENAPI_URL"

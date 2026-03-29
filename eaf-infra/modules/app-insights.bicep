@@ -5,7 +5,7 @@ param tags object
 var uniqueSuffix = toLower(substring(uniqueString(resourceGroup().id, environment), 0, 6))
 var workspaceName = 'eaf-${environment}-logs-${uniqueSuffix}'
 var appInsightsName = 'eaf-${environment}-appi-${uniqueSuffix}'
-var workspaceKeys = listKeys(logAnalytics.name, '2015-11-01-preview')
+var workspaceKeys = listKeys(resourceId('Microsoft.OperationalInsights/workspaces', workspaceName), '2023-09-01')
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: workspaceName

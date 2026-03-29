@@ -42,20 +42,20 @@ az deployment group create \
   --template-file main.bicep \
   --parameters @environments/dev.params.json \
   --parameters sqlAdminPassword="<secret>" \
-  --parameters referenceAppImage="ghcr.io/eaf/reference-app:dev" \
+  --parameters referenceAppImage="<dev-acr-login-server>/reference-app:dev" \
   --parameters referenceAppOpenApiUrl="https://reference-app.example.com/openapi.json"
 ```
 
-Use the matching parameter file for `staging` and `prod`. Production deployments should flow through the GitHub Actions workflow so that the protected `prod` environment can require manual approval.
+Use the matching parameter file for `staging` and `prod`. Azure DevOps Pipelines remains the source of truth for CI/CD; the GitHub workflow in this folder is an opt-in, manual helper for ad-hoc deployments and should use the same secrets/parameters as the Azure DevOps pipeline.
 
 ## CI/CD workflow
 
 - Workflow: `eaf-infra/.github/workflows/deploy.yml`
-- Trigger: push to `main`
+- Trigger: manual (`workflow_dispatch`) to avoid conflicting with the Azure DevOps pipeline.
 - Behavior:
-  - Deploys `dev` and `staging` automatically using their parameter files.
+  - Deploys `dev` and `staging` using their parameter files with overrides for secrets (SQL password) and app-specific values (reference app image, OpenAPI URL).
   - `prod` deployment runs only after manual approval via the protected `prod` environment.
-- Required GitHub secrets: Azure federated credentials for `azure/login`, `AZURE_SUBSCRIPTION_ID`, `AZURE_RESOURCE_GROUP`, and environment-scoped secrets for `SQL_ADMIN_PASSWORD_DEV`, `SQL_ADMIN_PASSWORD_STAGING`, and `SQL_ADMIN_PASSWORD_PROD` plus any image/OpenAPI URL overrides.
+- Required GitHub secrets: Azure federated credentials for `azure/login`, `AZURE_SUBSCRIPTION_ID`, `AZURE_RESOURCE_GROUP`, environment-scoped `SQL_ADMIN_PASSWORD_*`, `REFERENCE_APP_IMAGE_*`, and `REFERENCE_APP_OPENAPI_URL_*`.
 
 ## Adding a new application API
 
@@ -89,10 +89,8 @@ resource ordersApi 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
     ]
     subscriptionRequired: true
     apiRevision: '1'
-    import: {
-      contentFormat: 'openapi-link'
-      contentValue: 'https://orders.example.com/openapi.json'
-    }
+    format: 'openapi-link'
+    value: 'https://orders.example.com/openapi.json'
   }
 }
 

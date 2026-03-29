@@ -17,9 +17,9 @@ var policyContent = format('''<policies>
       <openid-config url="{0}" />
       <audiences><audience>api://eaf-platform</audience></audiences>
     </validate-jwt>
-    <set-variable name="correlationId" value="@(context.Request.Headers.GetValueOrDefault("x-correlation-id", Guid.NewGuid().ToString()))" />
+    <set-variable name="correlationId" value="@(context.Request.Headers.GetValueOrDefault('x-correlation-id', Guid.NewGuid().ToString()))" />
     <set-header name="x-correlation-id" exists-action="skip">
-      <value>@(context.Variables.GetValueOrDefault<string>("correlationId", Guid.NewGuid().ToString()))</value>
+      <value>@(context.Variables.GetValueOrDefault<string>('correlationId', Guid.NewGuid().ToString()))</value>
     </set-header>
     <rate-limit calls="100" renewal-period="60" />
   </inbound>
@@ -34,7 +34,7 @@ var policyContent = format('''<policies>
     <return-response>
       <set-status code="@(context.Response.StatusCode)" reason="@(context.Response.StatusReasonPhrase)" />
       <set-header name="x-correlation-id" exists-action="override">
-        <value>@(context.Variables.GetValueOrDefault<string>("correlationId", "unknown"))</value>
+        <value>@(context.Variables.GetValueOrDefault<string>('correlationId', 'unknown'))</value>
       </set-header>
     </return-response>
   </on-error>

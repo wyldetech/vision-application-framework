@@ -21,7 +21,7 @@
       "value": "https://reference-app.example.com/openapi.json"
     },
     "referenceAppImage": {
-      "value": "ghcr.io/eaf/reference-app:prod"
+      "value": "<replace-with-prod-acr-login-server>/reference-app:prod"
     }
   }
 }
