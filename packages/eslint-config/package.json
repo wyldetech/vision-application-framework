@@ -8,12 +8,12 @@
   "scripts": {
     "build": "echo 'No build step required'",
     "test": "vitest run",
-    "lint": "eslint test"
+    "lint": "eslint --config ./index.js test"
   },
   "peerDependencies": {
-    "eslint": "^8.57.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0 || ^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0 || ^8.0.0",
+    "@typescript-eslint/parser": "^7.0.0 || ^8.0.0",
     "eslint-plugin-react": "^7.34.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",

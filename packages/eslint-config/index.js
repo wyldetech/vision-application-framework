@@ -1,6 +1,11 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx: true } },
+  env: {
+    browser: true,
+    node: true,
+    es2021: true,
+  },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y', 'import'],
   extends: [
     'eslint:recommended',
@@ -24,8 +29,8 @@ module.exports = {
     // Import restrictions — prevent cross-app coupling and enforce @eaf/* usage
     'import/no-restricted-paths': ['error', {
       zones: [
-        // Applications must not import from other application packages
-        { target: './src', from: './src', except: ['./'] },
+        // Applications must not import from other applications' source directories
+        { target: './apps/*/src', from: './apps/*/src', except: ['./packages/*'] },
       ],
     }],
 
